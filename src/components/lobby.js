@@ -1,5 +1,9 @@
-import React, {Component} from 'react'
-import {db} from '../firebase'
+import React, {Component} from 'react';
+import {connect} from "react-redux";
+import {Link} from 'react-router-dom';
+import {db} from '../firebase';
+import {getRoomList, createRoom} from  "../actions";
+
 
 class Lobby extends Component {
     constructor(props){
@@ -7,36 +11,69 @@ class Lobby extends Component {
 
         this.state ={
             roomName: "",
-        }
+        };
+
+        this.dbChatRef = db.ref("/chat-rooms");
+    }
+
+    componentDidMount(){
+        this.dbChatRef.on("value", snapshot => {
+            this.props.getRoomList(snapshot.val());
+        })
+    }
+
+    componentWillUnmount(){
+        this.dbChatRef.off();
     }
 
     handleCreateRoom(e){
         e.preventDefault();
-        const {roomName} = this.state;
-        console.log("Room Name", roomName);
-        const newRoom = {
-            name: roomName,
-            chatLog: [`Room: ${roomName}`]
-        };
+        this.props.createRoom(this.state.roomName);
 
-        db.ref('/chat-rooms').push(newRoom).then(resp => {
-            console.log("Add Room Response", resp)
+        this.setState({
+            roomName: ""
         });
     }
 
+
     render(){
         const {roomName} = this.state;
+        const {roomList} = this.props;
+
+        console.log("Room List: ", roomList);
+        let rooms = [];
+        if (roomList){
+            rooms = Object.keys(roomList).map((key, index) => {
+                return (
+                    <li key={index} className="collection-item">
+                        <Link to={`/room/${key}/log/${roomList[key].chatLogId}`}>{roomList[key].name}</Link>
+                    </li>
+                )
+            });
+        } else {
+            rooms.push(<li key="0" className="collection-item">No Rooms Available. Create one above.</li>)
+        }
+
         return(
             <div>
                 <h2>Chat Lobby</h2>
                 <form onSubmit={this.handleCreateRoom.bind(this)}>
                     <label>Chat Room Name</label>
                     <input type="text" onChange={e => this.setState({roomName: e.target.value})} value={roomName}/>
-                    <button>Create Room</button>
+                    <button className="btn">Create Room</button>
                 </form>
+                <ul className="collection">
+                    {rooms}
+                </ul>
             </div>
         )
     }
 }
 
-export default Lobby;
+function mapStateToProps(state){
+    return {
+        roomList: state.chat.roomList
+    }
+}
+
+export default connect(mapStateToProps, {getRoomList, createRoom})(Lobby);
