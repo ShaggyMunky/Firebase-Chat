@@ -13,6 +13,7 @@ export default (state = DEFAULT_STATE, action) => {
         case types.GET_ROOM_DATA:
             return {...state, currentRoom: action.payload};
         case types.GET_CHAT_LOG:
+            console.log("I am triggered", action.payload);
             return {...state, chatLog: action.payload};
         default:
             return state;
