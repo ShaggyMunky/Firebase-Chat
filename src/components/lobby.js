@@ -72,7 +72,7 @@ class Lobby extends Component {
 
 function mapStateToProps(state){
     return {
-        roomList: state.chat.roomList
+        roomList: state.chatReducer.roomList
     }
 }
 

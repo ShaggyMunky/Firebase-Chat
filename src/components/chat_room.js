@@ -11,7 +11,7 @@ class ChatRoom extends Component {
         }
     }
     componentDidMount(){
-        console.log("before destructure", this.props.match)
+        console.log("before destructure", this.props.match);
         const {roomId, logId} = this.props.match.params;
         this.props.getRoomData(roomId, logId);
         console.log("after get room data", roomId, logId);
