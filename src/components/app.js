@@ -8,7 +8,7 @@ const App = () => (
     <div className="container">
         <h1 className="center-align">Fire Chat</h1>
         <Route exact path="/" component={Lobby}/>
-        <Route path="/room/:roomId/log/:logID" component={ChatRoom}/>
+        <Route path="/room/:roomId/log/:logId" component={ChatRoom}/>
     </div>
 );
 
